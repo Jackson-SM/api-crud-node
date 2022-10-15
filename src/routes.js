@@ -1,3 +1,4 @@
+require('express-async-errors');
 const routes = require('express').Router();
 
 const UserController = require('./controllers/UserController');
