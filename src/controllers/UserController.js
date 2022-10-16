@@ -16,7 +16,6 @@ class UserController {
       throw new BadRequestError('Preencha todas os campos corretamente.');
 
     const userExists = await User.findOne({ where: { email } });
-
     if (userExists) throw new NotFoundError('Usuário já existente.');
 
     const passwordHash = await bcrypt.hashSync(password, 10);
@@ -32,13 +31,29 @@ class UserController {
     return res.json(users);
   }
 
+  static async update(req, res) {
+    const { userId } = req.params;
+    const { password } = req.body;
+
+    const user = await User.findByPk(userId);
+    if (!user) throw new NotFoundError('Usuário não existente');
+
+    const verifyPassword = await bcrypt.compareSync(password, user.password);
+    if (verifyPassword) throw new BadRequestError('Indique uma password diferente da atual.');
+
+    const passwordHash = await bcrypt.hashSync(password, 10);
+
+    const userUpdate = await user.update({ password: passwordHash });
+
+    return res.json(userUpdate);
+  }
+
   static async login(req, res) {
     const { email, password } = req.body;
 
     const user = await User.findOne({ where: { email } });
 
     const passwordVerify = await bcrypt.compareSync(password, user.password);
-
     if (!passwordVerify) throw new BadRequestError('Login ou senha incorretos');
 
     const token = await jwt.sign({ id: user.id }, `${process.env.API_SECRET_KEY}`, { expiresIn: 60 * 2 });
