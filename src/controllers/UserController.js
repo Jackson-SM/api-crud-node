@@ -28,6 +28,8 @@ class UserController {
   static async read(req, res) {
     const users = await User.findAll();
 
+    if (!users) throw new NotFoundError('Não foi encontrado.');
+
     return res.json(users);
   }
 
