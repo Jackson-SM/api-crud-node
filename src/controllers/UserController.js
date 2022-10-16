@@ -50,6 +50,17 @@ class UserController {
     return res.json(userUpdate);
   }
 
+  static async delete(req, res) {
+    const { userId } = req.params;
+
+    const user = await User.findByPk(userId);
+
+    if (!user) throw new BadRequestError('Usuário inexistente.');
+    await user.destroy();
+
+    return res.status(204).json({ message: 'Usuário deletado.' });
+  }
+
   static async login(req, res) {
     const { email, password } = req.body;
 

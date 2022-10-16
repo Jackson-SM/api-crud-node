@@ -11,6 +11,7 @@ routes.post('/users/login', UserController.login);
 routes.use(authMiddleware);
 // Private Routes
 routes.get('/users', UserController.read);
-routes.post('/users/update/:userId', UserController.update);
+routes.put('/users/update/:userId', UserController.update);
+routes.delete('/users/delete/:userId', UserController.delete);
 
 module.exports = routes;
