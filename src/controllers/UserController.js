@@ -22,11 +22,13 @@ class UserController {
 
     const user = await User.create({ name, email, password: passwordHash });
 
-    return res.status(201).json(user);
+    const { password: _, ...userCreated } = user.dataValues;
+
+    return res.status(201).json(userCreated);
   }
 
   static async read(req, res) {
-    const users = await User.findAll();
+    const users = await User.findAll({ attributes: { exclude: ['password'] } });
 
     if (!users) throw new NotFoundError('Não foi encontrado.');
 
@@ -59,6 +61,16 @@ class UserController {
     await user.destroy();
 
     return res.status(204).json({ message: 'Usuário deletado.' });
+  }
+
+  static async userId(req, res) {
+    const { userId } = req.params;
+
+    const user = await User.findByPk(userId);
+
+    if (!user) throw new BadRequestError('Usuário inexistente');
+
+    return res.json(user);
   }
 
   static async login(req, res) {
