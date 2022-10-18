@@ -22,6 +22,10 @@ class User extends Model {
       },
     );
   }
+
+  static associate(models) {
+    this.hasMany(models.Task, { as: 'task', foreignKey: 'user_id' });
+  }
 }
 
 module.exports = User;
