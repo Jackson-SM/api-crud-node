@@ -63,10 +63,20 @@ class UserController {
     return res.status(204).json({ message: 'Usuário deletado.' });
   }
 
-  static async userId(req, res) {
+  static async userById(req, res) {
     const { userId } = req.params;
 
     const user = await User.findByPk(userId);
+
+    if (!user) throw new BadRequestError('Usuário inexistente');
+
+    return res.json(user);
+  }
+
+  static async userByEmail(req, res) {
+    const { email } = req.body;
+
+    const user = await User.findOne({ where: { email } });
 
     if (!user) throw new BadRequestError('Usuário inexistente');
 
@@ -81,7 +91,7 @@ class UserController {
     const passwordVerify = await bcrypt.compareSync(password, user.password);
     if (!passwordVerify) throw new BadRequestError('Login ou senha incorretos');
 
-    const token = await jwt.sign({ id: user.id }, `${process.env.API_SECRET_KEY}`, { expiresIn: 60 * 2 });
+    const token = await jwt.sign({ id: user.id }, `${process.env.API_SECRET_KEY}`, { expiresIn: 60 * 60 });
 
     const { password: _, ...userLogin } = user.dataValues;
 

@@ -11,6 +11,9 @@ routes.post('/users/login', UserController.login);
 routes.use(authMiddleware);
 // Private Routes
 routes.get('/users', UserController.read);
+routes.get('/users/:userId', UserController.userById);
+routes.get('/users/email', UserController.userByEmail);
+
 routes.put('/users/update/:userId', UserController.update);
 routes.delete('/users/delete/:userId', UserController.delete);
 
