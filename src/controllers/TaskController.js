@@ -13,13 +13,13 @@ class TaskController {
 
     const task = await Task.create({ title, description, user_id: userId });
 
-    res.status(201).json(task);
+    return res.status(201).json(task);
   }
 
   static async read(req, res) {
     const tasks = await Task.findAll({ include: { association: 'user', attributes: { exclude: ['password'] } } });
 
-    res.json(tasks);
+    return res.json(tasks);
   }
 
   static async update(req, res) {
@@ -32,14 +32,28 @@ class TaskController {
 
     const taskUpdate = await task.update({ title, description, realized });
 
-    res.json(task);
+    return res.json(task);
   }
 
-  // static async read(req, res) {}
+  static async delete(req, res) {
+    const { taskId } = req.params;
 
-  // static async update(req, res) {}
+    const task = await Task.findByPk(taskId);
 
-  // static async delete(req, res) {}
+    if (!task) throw new NotFoundError('Task não encontrada.');
+
+    task.destroy();
+  }
+
+  static async readById(req, res) {
+    const { taskId } = req.params;
+
+    const task = await Task.findByPk(taskId);
+
+    if (!task) throw new NotFoundError('Task não encontrada.');
+
+    return res.json(task);
+  }
 }
 
 module.exports = TaskController;

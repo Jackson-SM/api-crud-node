@@ -8,6 +8,9 @@ const authMiddleware = require('./middlewares/authMiddleware');
 // Public Routes
 routes.post('/users', UserController.create);
 routes.post('/users/login', UserController.login);
+routes.get('/isauth', authMiddleware, (req, res) => {
+  res.status(200).json({ message: 'Token is valid', statusCode: 200 });
+});
 
 routes.use(authMiddleware);
 // Private Routes

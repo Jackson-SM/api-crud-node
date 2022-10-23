@@ -6,17 +6,17 @@ const UnauthorizedError = require('../helpers/Errors/UnauthorizedError');
 const authMiddleware = async (req, res, next) => {
   const { authorization } = req.headers;
 
-  if (!authorization) res.status(401).json({ message: 'Token is required' });
+  if (!authorization) res.json({ message: 'Token is required', statusCode: 401 });
 
   const token = authorization.split(' ')[1];
 
   try {
-    const jwtVerify = await jwt.verify(token, `${process.env.API_SECRET_KEY}`);
-  } catch (e) {
-    throw new UnauthorizedError('Token is expired');
-  }
+    const { id } = await jwt.verify(token, `${process.env.API_SECRET_KEY}`);
 
-  next();
+    next();
+  } catch (err) {
+    res.json({ message: 'token is invalid', statusCode: 401 });
+  }
 };
 
 module.exports = authMiddleware;
